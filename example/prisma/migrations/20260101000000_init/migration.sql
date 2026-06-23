@@ -1,0 +1,11 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+ALTER TABLE "Task" ALTER COLUMN "title" TYPE VARCHAR(255);
+
+DELETE FROM "AuditLog";
+
+ALTER TABLE "Project" DROP COLUMN "legacyCode";
+
+DROP TABLE "OldProject";
+
+TRUNCATE TABLE "TemporaryImport";

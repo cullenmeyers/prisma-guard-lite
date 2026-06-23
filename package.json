@@ -1,0 +1,38 @@
+{
+  "name": "prisma-guard-lite",
+  "version": "0.1.0",
+  "description": "Pre-deploy migration risk checker for Prisma projects",
+  "keywords": [
+    "prisma",
+    "prisma-migrate",
+    "database",
+    "migrations",
+    "migration-checker",
+    "ci",
+    "postgres",
+    "typescript"
+  ],
+  "license": "MIT",
+  "bin": {
+    "prisma-guard-lite": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "VALIDATION.md",
+    "examples"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
