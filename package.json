@@ -1,6 +1,6 @@
 {
   "name": "prisma-guard-lite",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pre-deploy migration risk checker for Prisma projects",
   "keywords": [
     "prisma",

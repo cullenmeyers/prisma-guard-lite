@@ -6,6 +6,7 @@ import { formatMarkdownReport, formatTerminalReport } from "./report.js";
 import { scanProject, type ScanMode, type Severity } from "./scanner.js";
 
 interface CliOptions {
+  action?: "help" | "version";
   projectRoot: string;
   json: boolean;
   mode: ScanMode;
@@ -15,7 +16,34 @@ interface CliOptions {
   failOn?: Extract<Severity, "high" | "medium">;
 }
 
+const helpText = `Prisma Guard Lite
+
+Pre-deploy migration risk checker for Prisma projects.
+
+Usage:
+  prisma-guard-lite [project-path] [options]
+
+Examples:
+  npx prisma-guard-lite --latest
+  npx prisma-guard-lite --since main
+  npx prisma-guard-lite --staged --fail-on high
+  npx prisma-guard-lite /path/to/project --changed
+
+Options:
+  --latest                  Scan only the latest migration
+  --since <git-ref>         Scan migrations changed since a Git ref
+  --staged                  Scan staged migration files
+  --changed                 Scan changed and untracked migration files
+  --json                    Output JSON
+  --include-low             Include low-severity best-practice checks
+  --no-write                Do not write prisma-guard-report.md
+  --fail-on high|medium     Exit 1 at the selected severity threshold
+  --help, -h                Show help
+  --version, -v             Show version
+`;
+
 function parseArgs(args: string[]): CliOptions {
+  let action: CliOptions["action"];
   let projectPath: string | undefined;
   let json = false;
   let mode: ScanMode = "history";
@@ -35,7 +63,11 @@ function parseArgs(args: string[]): CliOptions {
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
-    if (arg === "--json") {
+    if (arg === "--help" || arg === "-h") {
+      action = "help";
+    } else if (arg === "--version" || arg === "-v") {
+      action = "version";
+    } else if (arg === "--json") {
       json = true;
     } else if (arg === "--latest") {
       selectMode("latest", arg);
@@ -71,6 +103,7 @@ function parseArgs(args: string[]): CliOptions {
   }
 
   return {
+    action,
     projectRoot: path.resolve(projectPath ?? process.cwd()),
     json,
     mode,
@@ -81,8 +114,32 @@ function parseArgs(args: string[]): CliOptions {
   };
 }
 
+async function packageVersion(): Promise<string> {
+  const packagePath = path.join(__dirname, "..", "package.json");
+  const packageJson = JSON.parse(await fs.readFile(packagePath, "utf8")) as {
+    version?: unknown;
+  };
+
+  if (typeof packageJson.version !== "string") {
+    throw new Error("Unable to read package version.");
+  }
+
+  return packageJson.version;
+}
+
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
+
+  if (options.action === "help") {
+    process.stdout.write(helpText);
+    return;
+  }
+
+  if (options.action === "version") {
+    process.stdout.write(`${await packageVersion()}\n`);
+    return;
+  }
+
   const stat = await fs.stat(options.projectRoot).catch(() => null);
 
   if (!stat?.isDirectory()) {

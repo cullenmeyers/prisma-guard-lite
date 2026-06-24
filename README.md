@@ -93,6 +93,8 @@ Git-aware modes require a Git worktree.
 | `--no-write` | Do not write `prisma-guard-report.md` |
 | `--fail-on high` | Exit with code 1 when high findings exist |
 | `--fail-on medium` | Exit with code 1 when high or medium findings exist |
+| `--help`, `-h` | Print CLI usage and options |
+| `--version`, `-v` | Print the installed package version |
 
 ## Example output
 
